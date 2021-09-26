@@ -3,6 +3,7 @@
 from django.urls import path
 from api.views import (
     MovieView,
+    UserLoginView
 )
 
 
@@ -15,12 +16,15 @@ urlpatterns = [
          MovieView.as_view(),
          name='movie-detail'),
     path('movie/create/',
-         MovieView,
+         MovieView.as_view(),
          name='movie-create'),
     path('movie/<uuid:movie_uuid>/update/',
-         MovieView,
+         MovieView.as_view(),
          name='movie-update'),
     path('movie/<uuid:movie_uuid>/delete/',
          MovieView.as_view(),
          name='movie-delete'),
+    path('login/',
+         UserLoginView.as_view(),
+         name='user-login'),
 ]

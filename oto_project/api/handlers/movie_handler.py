@@ -56,12 +56,11 @@ class MovieHandlers():
         for field in Movies._meta.fields:  # noqa
             if field.name in application_data:
                 request_data[field.name] = application_data.get(field.name)
-        with transaction.atomic:
-            movie_obj = Movies.objects.create(
-                **request_data
-            )
-        movie_uuid = self.add_genre_director(movie_obj, directors, genres)
-        return movie_uuid
+        movie_obj = Movies.objects.create(
+            **request_data
+        )
+        self.add_genre_director(movie_obj, directors, genres)
+        return {'message': 'Successfully Created.'}
 
     def update_a_movie_data(self, movie_id, data: dict):
         """Update data for a movie."""
@@ -71,10 +70,9 @@ class MovieHandlers():
         for field in Movies._meta.fields:  # noqa
             if field.name in application_data:
                 request_data[field.name] = application_data.get(field.name)
-        with transaction.atomic():
-            movie_obj = Movies.objects.filter(
-                uuid=movie_id).update(**request_data)
-        movie_uuid = self.add_genre_director(movie_obj, directors, genres)
+        movie_obj = Movies.objects.filter(
+            uuid=movie_id).update(**request_data)
+        self.add_genre_director(movie_obj, directors, genres)
         movie_obj.refresh_from_db()
         if movie_obj.like >= 10:
             like_count = movie_obj.like%10
@@ -82,12 +80,12 @@ class MovieHandlers():
             movie_obj.like = like_count
             movie_obj.save()
             movie_obj.refresh_from_db()
-        return movie_uuid
+        return {'message': 'Successfully Updated.'}
 
     def remove_movie(self, movie_id):
         """Remove movie form the collection."""
         Movies.objects.filter(uuid=movie_id).delete()
-        return 'Successfully Deleted.'
+        return {'message': 'Successfully Deleted.'}
 
     def create_or_get_director(self, directors: list):
         """Get or create directors."""
@@ -96,7 +94,7 @@ class MovieHandlers():
             director_obj = Director.objects.get_or_create(
                 director_name=director_name
             )
-            directors_obj_list.append(director_obj)
+            directors_obj_list.append(director_obj[0])
         return directors_obj_list
 
     def create_or_get_genre(self, genres: list):
@@ -106,7 +104,7 @@ class MovieHandlers():
             genre_obj = Genre.objects.get_or_create(
                 name=genre_name
             )
-            genres_obj_list.append(genre_obj)
+            genres_obj_list.append(genre_obj[0])
         return genres_obj_list
 
     def get_or_create_genre_and_director(self, data: dict):
@@ -117,14 +115,13 @@ class MovieHandlers():
         data.pop('genre')
         return directors, genres
 
-    def add_genre_director(self, movie_obj, genres: list, directors: list):
+    def add_genre_director(self, movie_obj, directors: list, genres: list):
         """Add genre and director for a movie."""
         for genre_obj in genres:
             movie_obj.genre.add(genre_obj)
         for director_obj in directors:
             movie_obj.director.add(director_obj)
-        self.movie_obj.save()
-        return movie_obj.uuid
+        movie_obj.save()
 
     def search_movies(self, input_data):
         return Movies.objects.filter(name__icontains=input_data.get('data'))

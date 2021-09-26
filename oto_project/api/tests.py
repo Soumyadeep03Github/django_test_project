@@ -74,7 +74,6 @@ class TestMovieView(TestCase):
                       args=(self.movie.uuid,))
         main_url = 'http://127.0.0.1' + url
         response = self.client.put(main_url, {'name': 'Test Movie Name Updated'})
-        print(response._container)
         self.assertEqual(response.status_code, 200)
 
 
@@ -97,20 +96,6 @@ class TestMovieCreate(TestCase):
         """Test case to movie create."""
         url = reverse('api:movie-create')
         main_url = 'http://127.0.0.1' + url
-        data = {
-            'popularity': 83.0,
-            'director': [
-                'Victor Fleming'
-            ],
-            'genre': [
-                'Adventure',
-                'Family',
-                'Fantasy',
-                'Musical'
-            ],
-            'imdb_score': 8.3,
-            'name': 'The Wizard of Oz'
-        }
         response = self.client.post(main_url, {
             'popularity': 83.0,
             'director': [
@@ -125,5 +110,4 @@ class TestMovieCreate(TestCase):
             'imdb_score': 8.3,
             'name': 'The Wizard of Oz'
         })
-        print(response._container)
         self.assertEqual(response.status_code, 200)
