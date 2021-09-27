@@ -1,5 +1,5 @@
 """Test file for testing all the views and the handlers."""
-import json
+import uuid
 
 from django.contrib.auth.models import User
 from django.test import TestCase, Client
@@ -8,7 +8,8 @@ from django.urls import reverse
 from api.models import (
     Director,
     Genre,
-    Movies
+    Movies,
+    Token
 )
 
 
@@ -20,6 +21,10 @@ class TestMovieView(TestCase):
         self.client = Client()
         self.user = User.objects.create_user(
             username='test_user', email='test@test.com', password='1234')
+        self.token_obj = Token.objects.create(
+            user=self.user,
+            token=uuid.uuid4()
+        )
         self.user.set_password('1234')
         self.user.save()
         self.client.force_login(self.user) 
