@@ -29,7 +29,7 @@ DEBUG = False
 ALLOWED_HOSTS = [
     'https://deploy-oto-project.herokuapp.com/',
     'localhost',
-    '127.0.0.1'
+    '127.0.0.1:8000'
 ]
 
 
